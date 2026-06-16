@@ -34,7 +34,7 @@ set_target_properties(rot13-slint PROPERTIES OUTPUT_NAME "Tabula")
 set_property(TARGET rot13-slint PROPERTY SLINT_EMBED_RESOURCES embed-files)
 
 if (WIN32)
-    set_target_properties(rot13-slint PROPERTIES WIN32_EXECUTABLE "$<NOT:$<CONFIG:Debug>>")
+    set_target_properties(rot13-slint PROPERTIES WIN32_EXECUTABLE TRUE)
     target_include_directories(rot13-slint PRIVATE resources)
 endif()
 
