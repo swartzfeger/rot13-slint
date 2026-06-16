@@ -49,6 +49,45 @@ component MatrixTextEdit inherits Rectangle {
     }
 }
 
+component CopyIconButton inherits Rectangle {
+    in property <bool> enabled: true;
+    callback clicked();
+
+    width: 32px;
+    height: 28px;
+    border-radius: 6px;
+    background: !enabled ? transparent : touch.pressed ? #1f6f3a : touch.has-hover ? #123f24 : transparent;
+
+    Rectangle {
+        x: 9px;
+        y: 6px;
+        width: 11px;
+        height: 14px;
+        border-width: 1px;
+        border-color: root.enabled ? #68ff8d : #447554;
+        border-radius: 2px;
+        background: transparent;
+    }
+
+    Rectangle {
+        x: 13px;
+        y: 9px;
+        width: 11px;
+        height: 14px;
+        border-width: 1px;
+        border-color: root.enabled ? #a8ffbd : #447554;
+        border-radius: 2px;
+        background: #07120d;
+    }
+
+    touch := TouchArea {
+        enabled: root.enabled;
+        clicked => {
+            root.clicked();
+        }
+    }
+}
+
 component MatrixButton inherits Rectangle {
     in property <string> text;
     in property <bool> enabled: true;
@@ -91,6 +130,8 @@ export component AppWindow inherits Window {
 
     callback encode-text();
     callback decode-text();
+    callback copy-input();
+    callback copy-output();
 
     init => {
         Palette.color-scheme = ColorScheme.dark;
@@ -122,7 +163,7 @@ export component AppWindow inherits Window {
                 }
 
                 Text {
-                    text: "A polyalphabetic shifting cipher used by Caesar in 1st Century BC";
+                    text: "A polyalphabetic shifting cipher developed by Johannes Trithemius in 1508";
                     color: #8fffaa;
                     font-size: 15px;
                     font-family: "Glass TTY VT220";
@@ -142,8 +183,24 @@ export component AppWindow inherits Window {
                     padding: 18px;
                     spacing: 10px;
 
-                    FieldLabel {
-                        text: "Input";
+                    HorizontalLayout {
+                        spacing: 8px;
+
+                        FieldLabel {
+                            text: "Input";
+                            vertical-alignment: center;
+                        }
+
+                        Rectangle {
+                            horizontal-stretch: 1;
+                        }
+
+                        CopyIconButton {
+                            enabled: root.input-text != "";
+                            clicked => {
+                                root.copy-input();
+                            }
+                        }
                     }
 
                     MatrixTextEdit {
@@ -158,8 +215,24 @@ export component AppWindow inherits Window {
                     padding: 18px;
                     spacing: 10px;
 
-                    FieldLabel {
-                        text: "Output";
+                    HorizontalLayout {
+                        spacing: 8px;
+
+                        FieldLabel {
+                            text: "Output";
+                            vertical-alignment: center;
+                        }
+
+                        Rectangle {
+                            horizontal-stretch: 1;
+                        }
+
+                        CopyIconButton {
+                            enabled: root.output-text != "";
+                            clicked => {
+                                root.copy-output();
+                            }
+                        }
                     }
 
                     MatrixTextEdit {

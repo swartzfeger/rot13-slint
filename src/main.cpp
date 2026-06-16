@@ -1,6 +1,7 @@
 #include "app-window.h"
 
 #include <cctype>
+#include <cstdio>
 #include <string>
 
 namespace {
@@ -41,6 +42,28 @@ slint::SharedString tabula_decode(const slint::SharedString &text)
     return tabula_transform(text, -1);
 }
 
+void copy_to_clipboard(const slint::SharedString &text)
+{
+#ifdef _WIN32
+    FILE *clipboard = _popen("clip", "w");
+#else
+    FILE *clipboard = popen("pbcopy", "w");
+#endif
+
+    if (!clipboard) {
+        return;
+    }
+
+    const std::string text_to_copy(text);
+    fwrite(text_to_copy.data(), sizeof(char), text_to_copy.size(), clipboard);
+
+#ifdef _WIN32
+    _pclose(clipboard);
+#else
+    pclose(clipboard);
+#endif
+}
+
 } // namespace
 
 int main()
@@ -57,6 +80,18 @@ int main()
     app->on_decode_text([weak_app] {
         if (auto locked_app = weak_app.lock()) {
             (*locked_app)->set_output_text(tabula_decode((*locked_app)->get_input_text()));
+        }
+    });
+
+    app->on_copy_input([weak_app] {
+        if (auto locked_app = weak_app.lock()) {
+            copy_to_clipboard((*locked_app)->get_input_text());
+        }
+    });
+
+    app->on_copy_output([weak_app] {
+        if (auto locked_app = weak_app.lock()) {
+            copy_to_clipboard((*locked_app)->get_output_text());
         }
     });
 
