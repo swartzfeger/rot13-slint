@@ -1,0 +1,196 @@
+import { Palette } from "std-widgets.slint";
+import "../resources/fonts/Glass_TTY_VT220.ttf";
+
+component FieldLabel inherits Text {
+    color: #68ff8d;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: "Glass TTY VT220";
+}
+
+component Panel inherits Rectangle {
+    background: #07120d;
+    border-color: #1f7f45;
+    border-width: 1px;
+    border-radius: 8px;
+}
+
+component MatrixTextEdit inherits Rectangle {
+    in-out property <string> text <=> input.text;
+    in property <bool> read-only <=> input.read-only;
+
+    horizontal-stretch: 1;
+    vertical-stretch: 1;
+    background: transparent;
+    forward-focus: input;
+
+    input := TextInput {
+        width: 100%;
+        height: 100%;
+        text: "";
+        enabled: true;
+        read-only: false;
+        single-line: false;
+        font-size: 20px;
+        font-family: "Glass TTY VT220";
+        color: #d8ffe0;
+        selection-background-color: #39ff74;
+        selection-foreground-color: #020403;
+        text-cursor-width: 12px;
+        wrap: word-wrap;
+    }
+
+    Rectangle {
+        y: parent.height - self.height;
+        width: parent.width;
+        height: 3px;
+        border-radius: 1px;
+        background: input.has-focus ? #39ff74 : transparent;
+    }
+}
+
+component MatrixButton inherits Rectangle {
+    in property <string> text;
+    in property <bool> enabled: true;
+    callback clicked();
+
+    width: 176px;
+    height: 42px;
+    border-radius: 8px;
+    border-width: 1px;
+    border-color: enabled ? #39ff74 : #1b5a32;
+    background: !enabled ? #08110c : touch.pressed ? #2eff62 : touch.has-hover ? #123f24 : #0a1d12;
+
+    Text {
+        text: root.text;
+        color: root.enabled ? (touch.pressed ? #020403 : #a8ffbd) : #447554;
+        font-size: 16px;
+        font-family: "Glass TTY VT220";
+        font-weight: 700;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+
+    touch := TouchArea {
+        enabled: root.enabled;
+        clicked => {
+            root.clicked();
+        }
+    }
+}
+
+export component AppWindow inherits Window {
+    title: "ROT13";
+    width: 760px;
+    height: 560px;
+    background: #020403;
+    default-font-family: "Glass TTY VT220";
+
+    in-out property <string> input-text;
+    in-out property <string> output-text;
+
+    callback encode-decode();
+
+    init => {
+        Palette.color-scheme = ColorScheme.dark;
+    }
+
+    VerticalLayout {
+        padding: 22px;
+        spacing: 14px;
+
+        Panel {
+            height: 66px;
+            background: #06140d;
+            border-color: #2eff62;
+
+            HorizontalLayout {
+                padding-left: 18px;
+                padding-right: 18px;
+                padding-top: 14px;
+                padding-bottom: 14px;
+                spacing: 14px;
+
+                Text {
+                    text: "ROT13";
+                    color: #46ff6f;
+                    font-size: 30px;
+                    font-weight: 800;
+                    font-family: "Glass TTY VT220";
+                    vertical-alignment: center;
+                }
+
+                Text {
+                    text: "A small native C++/Slint desktop app for macOS and Windows build testing.";
+                    color: #8fffaa;
+                    font-size: 15px;
+                    font-family: "Glass TTY VT220";
+                    wrap: word-wrap;
+                    vertical-alignment: center;
+                    horizontal-stretch: 1;
+                }
+            }
+        }
+
+        HorizontalLayout {
+            spacing: 18px;
+
+            Panel {
+                width: (parent.width - 18px) / 2;
+                VerticalLayout {
+                    padding: 18px;
+                    spacing: 10px;
+
+                    FieldLabel {
+                        text: "Input";
+                    }
+
+                    MatrixTextEdit {
+                        text <=> root.input-text;
+                    }
+                }
+            }
+
+            Panel {
+                width: (parent.width - 18px) / 2;
+                VerticalLayout {
+                    padding: 18px;
+                    spacing: 10px;
+
+                    FieldLabel {
+                        text: "Output";
+                    }
+
+                    MatrixTextEdit {
+                        text <=> root.output-text;
+                        read-only: true;
+                    }
+                }
+            }
+        }
+
+        HorizontalLayout {
+            spacing: 14px;
+
+            Rectangle {
+                horizontal-stretch: 1;
+            }
+
+            Text {
+                text: root.input-text == "" ? "Enter text, then run ROT13." : "Ready.";
+                color: #6bf58e;
+                font-size: 15px;
+                font-family: "Glass TTY VT220";
+                vertical-alignment: center;
+            }
+
+            MatrixButton {
+                text: "Encode / Decode";
+                enabled: root.input-text != "";
+                clicked => {
+                    root.encode-decode();
+                }
+            }
+        }
+    }
+}
