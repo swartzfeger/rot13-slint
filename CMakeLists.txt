@@ -29,6 +29,7 @@ endif()
 
 add_executable(rot13-slint ${rot13_sources})
 
+set_target_properties(rot13-slint PROPERTIES OUTPUT_NAME "Tabula")
 set_property(TARGET rot13-slint PROPERTY SLINT_EMBED_RESOURCES embed-files)
 
 if (WIN32)
@@ -47,7 +48,6 @@ if (APPLE)
         MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
         MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
         MACOSX_BUNDLE_ICON_FILE "rot13.icns"
-        OUTPUT_NAME "Tabula"
     )
 endif()
 
@@ -72,7 +72,15 @@ if (WIN32)
     add_custom_command(
         TARGET rot13-slint
         POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:rot13-slint> $<TARGET_FILE_DIR:rot13-slint>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_RUNTIME_DLLS:rot13-slint> $<TARGET_FILE_DIR:rot13-slint>
         COMMAND_EXPAND_LISTS
     )
+
+    if (TARGET slint_cpp-shared)
+        add_custom_command(
+            TARGET rot13-slint
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:slint_cpp-shared> $<TARGET_FILE_DIR:rot13-slint>
+        )
+    endif()
 endif()
