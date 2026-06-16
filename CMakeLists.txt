@@ -42,12 +42,12 @@ if (APPLE)
 
     set_target_properties(rot13-slint PROPERTIES
         MACOSX_BUNDLE TRUE
-        MACOSX_BUNDLE_BUNDLE_NAME "ROT13"
+        MACOSX_BUNDLE_BUNDLE_NAME "Tabula"
         MACOSX_BUNDLE_GUI_IDENTIFIER "com.swartzfeger.rot13-slint"
         MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
         MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
         MACOSX_BUNDLE_ICON_FILE "rot13.icns"
-        OUTPUT_NAME "ROT13"
+        OUTPUT_NAME "Tabula"
     )
 endif()
 

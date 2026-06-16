@@ -80,7 +80,7 @@ component MatrixButton inherits Rectangle {
 }
 
 export component AppWindow inherits Window {
-    title: "ROT13";
+    title: "Tabula";
     width: 760px;
     height: 560px;
     background: #020403;
@@ -89,7 +89,8 @@ export component AppWindow inherits Window {
     in-out property <string> input-text;
     in-out property <string> output-text;
 
-    callback encode-decode();
+    callback encode-text();
+    callback decode-text();
 
     init => {
         Palette.color-scheme = ColorScheme.dark;
@@ -112,7 +113,7 @@ export component AppWindow inherits Window {
                 spacing: 14px;
 
                 Text {
-                    text: "ROT13";
+                    text: "Tabula";
                     color: #46ff6f;
                     font-size: 30px;
                     font-weight: 800;
@@ -121,7 +122,7 @@ export component AppWindow inherits Window {
                 }
 
                 Text {
-                    text: "A small native C++/Slint desktop app for macOS and Windows build testing.";
+                    text: "A polyalphabetic shifting cipher used by Caesar in 1st Century BC";
                     color: #8fffaa;
                     font-size: 15px;
                     font-family: "Glass TTY VT220";
@@ -177,7 +178,7 @@ export component AppWindow inherits Window {
             }
 
             Text {
-                text: root.input-text == "" ? "Enter text, then run ROT13." : "Ready.";
+                text: root.input-text == "" ? "Enter text, then choose a direction." : "Ready.";
                 color: #6bf58e;
                 font-size: 15px;
                 font-family: "Glass TTY VT220";
@@ -185,10 +186,18 @@ export component AppWindow inherits Window {
             }
 
             MatrixButton {
-                text: "Encode / Decode";
+                text: "Encode";
                 enabled: root.input-text != "";
                 clicked => {
-                    root.encode-decode();
+                    root.encode-text();
+                }
+            }
+
+            MatrixButton {
+                text: "Decode";
+                enabled: root.input-text != "";
+                clicked => {
+                    root.decode-text();
                 }
             }
         }
