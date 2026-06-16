@@ -2,6 +2,7 @@
 
 #include <cctype>
 #include <cstdio>
+#include <cstdlib>
 #include <string>
 
 namespace {
@@ -64,10 +65,21 @@ void copy_to_clipboard(const slint::SharedString &text)
 #endif
 }
 
+void configure_backend()
+{
+#ifdef _WIN32
+    if (std::getenv("SLINT_BACKEND") == nullptr) {
+        _putenv_s("SLINT_BACKEND", "winit-software");
+    }
+#endif
+}
+
 } // namespace
 
 int main()
 {
+    configure_backend();
+
     auto app = AppWindow::create();
     slint::ComponentWeakHandle<AppWindow> weak_app(app);
 
