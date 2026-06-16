@@ -5,6 +5,7 @@ project(rot13_slint VERSION 0.1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+get_filename_component(CMAKE_CXX_COMPILER_DIR "${CMAKE_CXX_COMPILER}" DIRECTORY)
 
 find_package(Slint QUIET)
 
@@ -84,7 +85,7 @@ if (WIN32)
             COMMAND ${CMAKE_COMMAND}
                 -DAPP_EXECUTABLE=$<TARGET_FILE:rot13-slint>
                 -DAPP_DIR=$<TARGET_FILE_DIR:rot13-slint>
-                -DRUNTIME_SEARCH_DIRS=$<TARGET_FILE_DIR:slint_cpp-shared>
+                -DRUNTIME_SEARCH_DIRS="$<TARGET_FILE_DIR:slint_cpp-shared>\;${CMAKE_CXX_COMPILER_DIR}"
                 -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/BundleWindows.cmake"
         )
     endif()
