@@ -33,7 +33,7 @@ set_target_properties(rot13-slint PROPERTIES OUTPUT_NAME "Tabula")
 set_property(TARGET rot13-slint PROPERTY SLINT_EMBED_RESOURCES embed-files)
 
 if (WIN32)
-    set_target_properties(rot13-slint PROPERTIES WIN32_EXECUTABLE TRUE)
+    set_target_properties(rot13-slint PROPERTIES WIN32_EXECUTABLE "$<NOT:$<CONFIG:Debug>>")
     target_include_directories(rot13-slint PRIVATE resources)
 endif()
 
@@ -81,6 +81,11 @@ if (WIN32)
             TARGET rot13-slint
             POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:slint_cpp-shared> $<TARGET_FILE_DIR:rot13-slint>
+            COMMAND ${CMAKE_COMMAND}
+                -DAPP_EXECUTABLE=$<TARGET_FILE:rot13-slint>
+                -DAPP_DIR=$<TARGET_FILE_DIR:rot13-slint>
+                -DRUNTIME_SEARCH_DIRS=$<TARGET_FILE_DIR:slint_cpp-shared>
+                -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/BundleWindows.cmake"
         )
     endif()
 endif()
